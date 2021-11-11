@@ -1,6 +1,6 @@
 const {
     server
-} = require("./src/index.js")
+} = require("./../src/index")
 
 const {
     expect
@@ -13,9 +13,9 @@ const request = require('supertest');
 
 test("Progress succesfully send", async () => {
 
-    const response = await request(server).post("/user/progress").send({
+    const response = await request(server).post("/players/5").send({
 
-        progress: "chapter5"
+        username: "SALIH"
     });
     expect(response.statusCode).toBe(200)
 
