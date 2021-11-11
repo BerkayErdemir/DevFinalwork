@@ -1,12 +1,12 @@
-FROM node:16
+FROM node:latest
 
-WORKDIR ./usr/src/
-
-
+WORKDIR ./usr/app/
 
 COPY package*.json ./
 RUN npm install
+
 EXPOSE 3000
+
 COPY . .
 
-CMD ["npm", "start"];
+CMD ["npm", "start"]

@@ -1,24 +1,40 @@
 const express = require('express');
-const pool = require("./../database/db")
+const dotenv = require("dotenv");
+dotenv.config();
 
 const server = express();
+const PORT = 3000;
 
-const PORT = 1234;
 
+
+const password = process.env.POSTGRES_PASSWORD;
+
+const knex = require('knex')({
+    client: 'pg',
+    connection: {
+        host: '127.0.0.1',
+        port: 5432,
+        user: 'postgres',
+        password: password,
+        database: 'database_players'
+    }
+});
 server.use(express.json())
 
-
-server.get('/user/progress', async (req, res) => {
+server.get('/players', (req, res) => {
 
     try {
-        const allUsersWithdes = await pool.query("SELECT * FROM players");
-        res.json(allUsersWithdes.rows);
+        knex.select("*").from("players").then(function (data) {
+
+            res.json(data);
+        });
+
     } catch (err) {
         console.log(err.message);
     }
 });
 
-server.get('/', async (req, res) => {
+server.get('/', (req, res) => {
 
     try {
 
@@ -28,86 +44,84 @@ server.get('/', async (req, res) => {
     }
 });
 
-server.get('/user/progress/:id', async (req, res) => {
+server.get('/players/:id', (req, res) => {
 
     try {
         const {
             id
         } = req.params;
-        const player = await pool.query("SELECT * FROM players WHERE user_id = $1", [id]);
-        res.json(player.rows[0]);
+        const player = knex("players").select().where("user_id", id).then(function (data) {
+
+            res.json(data);
+        });
+
     } catch (err) {
         console.log(err.message);
     }
 });
 
-server.put('/user/progress/:id', async (req, res) => {
+server.put('/players/:id', (req, res) => {
 
     try {
+        const player = req.body;
         const {
             id
         } = req.params;
-        const {
-            username
-        } = req.body;
-        const {
-            password
-        } = req.body;
-        const {
-            email
-        } = req.body;
 
-        const updateInfo = await pool.query("UPDATE players SET username = $1, password = $2, email = $3 WHERE user_id = $4", [username, password, email, id]);
-        res.json("updated")
-    } catch (err) {
-        console.log(err.message);
-    }
-});
+        const updateInfo = knex("players").where("user_id", id).update({
+            username: player.username
+        }).then(function (data) {
 
+            res.json(data);
+        });
 
-server.delete('/user/progress/:id', async (req, res) => {
-
-    try {
-        const {
-            id
-        } = req.params;
-        const deleteUser = await pool.query("DELETE FROM players WHERE user_id = $1", [id]);
-        res.json("deleted");
     } catch (err) {
         console.log(err.message);
     }
 });
 
 
-
-server.post('/user/progress', async (req, res) => {
+server.delete('/players/:id', (req, res) => {
 
     try {
         const {
-            username
-        } = req.body;
-        const {
-            password
-        } = req.body;
-        const {
-            email
-        } = req.body;
+            id
+        } = req.params;
+        const deleteUser = knex("players").where("user_id", id).del().then(function (data) {
 
-        const newName = await pool.query("INSERT INTO players (username, password, email) VALUES ($1, $2, $3) RETURNING *", [username, password, email]);
-        res.json(newName)
+            res.json(data);
+        });
 
     } catch (err) {
+        console.log(err.message);
+    }
+});
 
+
+
+server.post('/players', (req, res) => {
+
+    try {
+        const player = req.body;
+
+        const newName = knex("players").insert({
+            username: player.username,
+            password: player.password,
+            email: player.email
+        }).then(function (data) {
+
+            res.json(data);
+        });
+
+    } catch (err) {
         console.log(err.message)
     }
-
-
 });
 
 //Listening f
 server.listen(PORT, () => {
 
-    console.log('listening to port 1234')
+    console.log(`listening to port ${PORT}`)
 });
 
 module.exports = {
