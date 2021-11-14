@@ -3,7 +3,7 @@ version: "3.9"
 services:
   api:
     build: ./api
-    image: berkayerdemir/api_taak:0.1
+    image: berukey/api_finalworkdev:0.1
     ports:
       - 80:${PORT}
     volumes:
@@ -11,14 +11,19 @@ services:
     depends_on:
       - pg
     environment:
-      - PORT
+      PORT:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DATABASE:
+      POSTGRES_CONNECTION:
+      POSTGRES_HOST: pg
 
   pg:
-    image: postgres:latest
+    image: "postgres:latest"
     ports: 
       - 5432:5432
     environment:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
-      - POSTGRES_DB
+      - POSTGRES_DATABASE
       - POSTGRES_CONNECTION
