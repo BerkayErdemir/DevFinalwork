@@ -21,12 +21,15 @@ const knex = require('knex')({
 
 async function manageTables() {
     try {
-        await knex.schema.dropTableIfExists('players');
-        await knex.schema.createTable('players', function (table) {
-            table.increments('id').primary();
-            table.string('username');
-            table.string('password');
-            table.string('email');
+        knex.schema.hasTable('players').then(function (exists) {
+            if (!exists) {
+                return knex.schema.createTable('players', function (table) {
+                    table.increments('id').primary();
+                    table.string('username', 100);
+                    table.string('password', 100);
+                    table.text('email');
+                });
+            }
         });
     } catch (error) {
         console.log("error", error);
@@ -42,11 +45,12 @@ async function folderTable() {
     })
 }
 
-init()
+
 async function init() {
     await manageTables();
-    await folderTable();
+    // await folderTable();
 }
+init()
 server.use(express.json())
 
 server.get('/players', (req, res) => {
@@ -92,6 +96,7 @@ server.put('/players/:id', (req, res) => {
 
     try {
         const player = req.body;
+        console.log(player);
         const {
             id
         } = req.params;

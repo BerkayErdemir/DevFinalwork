@@ -1,82 +1,73 @@
 const {
     server
-} = require("../index")
+} = require("./../index");
 
 const {
     expect
 } = require("@jest/globals");
 
+require('dotenv').config();
 const request = require('supertest');
 
 
 //-----------------------------------------------------------------
 
+test("Progress succesfully send", async () => {
 
-//Post integration test
-// test("Progress succesfully send", () => {
-//     const player = req.body;
+    const response = await request(server).post("/players").send({
 
-//     const response = request(server).post("/players").send({
-//         username: "GG"
+        username: "opop",
+        password: "test",
+        email: "testestes@hotmmayl.uk"
+    });
+    expect(response.statusCode).toBe(200);
 
-//     });
-//     expect(response).toBe("username: GG")
-// });
 
-//get integration test
-test("getting info", () => {
-    request(server).get("/players").then((res) => {
-        res.body;
-    })
 });
 
+test("Progress succesfully deleted", async () => {
+
+    const response = await request(server).delete("/players/opop").send();
+    expect(response.statusCode).toBe(200);
+
+
+});
 test("bad request 404", async () => {
+
     const response = await request(server).post("/udsdsdsds").send({
+
         progress: "chapter5"
     });
-    expect(response.statusCode).toBe(404)
+    expect(response.statusCode).toBe(404);
 
 });
 
-// test("change name", () => {
-//     const response = request(server).put("/players/5").send({
-//         username: "GG"
-//     })
-//     JSON.stringify(response);
-//     console.log(response);
-//     expect(response).toBe("GG");
+test("testing if the user can log in", async () => {
+    const response = await request(server).post("/user/progress").send({
 
-// });
+        name: "name",
+        password: "password"
+    });
+    expect(response.body.UserId).toBeDefined;
 
-//Delete integration test
+
+});
+
 test("deleting a user", async () => {
 
-    const response = await request(server).delete("/players/5");
-    expect(response.body.UserId)
+    const response = await request(server).delete("/users").send({
+
+
+    });
+    expect(response.body.UserId);
 });
 
 // test("Delete name", async () => {
 //     const name = "name";
 
 
-//     const response = await request(server).delete(`/user/delete/${name.id}`);
+//     const response = await request(server).delete(/user/delete/${name.id});
 //     expect(response.status).toBe(404);
 //     expect(typeof response.body).toBe("object");
 //     expect(response.body.message).toBe("Name deleted");
 // });
-
-// it("PUT /players/6", async () => {
-//     let player = {
-//         username: "GG",
-//         password: "fjdsk",
-//         email: "testtest@gmail.com",
-//     };
-//     const response = await request(server).put("/player/6").send(player);
-//     expect(response.body).toEqual({
-//         status: "success",
-//         playerinfo: {
-//             username: "GG",
-//             password: "fjdsk",
-//             email: "testtest@gmail.com"
-//         },
-//     });
